@@ -12,7 +12,10 @@ var commonFalsePositives = require('./utils/commonFalsePositives');
 // Tests
 // ------------------------------------------------------------------------------
 
-var eslintTester = new RuleTester();
+var eslintTester = new RuleTester({
+    parserOptions: {ecmaVersion: 2015}
+});
+
 eslintTester.run('di-unused', rule, {
     valid: [
         'angular.module("").controller("", function($q) {return $q;});',
@@ -63,6 +66,9 @@ eslintTester.run('di-unused', rule, {
         }, {
             code: 'angular.module("").animation("", fn); function fn($q) {}',
             errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").animation("", fn); $q => {}',
+            errors: [{message: 'Unused injected value $q'}]
         },
         // controller
         {
@@ -77,6 +83,9 @@ eslintTester.run('di-unused', rule, {
         }, {
             code: 'angular.module("").controller("", fn); function fn($q) {}',
             errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").controller("", fn); ($q)  => {}',
+            errors: [{message: 'Unused injected value $q'}]
         },
         // directive
         {
@@ -90,6 +99,9 @@ eslintTester.run('di-unused', rule, {
             errors: [{message: 'Unused injected value $q'}]
         }, {
             code: 'angular.module("").directive("", fn); function fn($q) {}',
+            errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").directive("", fn); $q => {}',
             errors: [{message: 'Unused injected value $q'}]
         },
         // factory
@@ -121,6 +133,11 @@ eslintTester.run('di-unused', rule, {
             errors: [
                 {message: 'Unused injected value $http'}
             ]
+        }, {
+            code: 'angular.module("").factory("", ["$http", "$q", ($http, $q) => {return $q.resolve()}]);',
+            errors: [
+                {message: 'Unused injected value $http'}
+            ]
         },
         // filter
         {
@@ -134,6 +151,9 @@ eslintTester.run('di-unused', rule, {
             errors: [{message: 'Unused injected value $q'}]
         }, {
             code: 'angular.module("").filter("", fn); function fn($q) {}',
+            errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").filter("", fn); ($q) => {}',
             errors: [{message: 'Unused injected value $q'}]
         },
         // provider
@@ -149,6 +169,9 @@ eslintTester.run('di-unused', rule, {
         }, {
             code: 'angular.module("").provider("", fn); function fn($q) {}',
             errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").provider("", fn); ($q) => {}',
+            errors: [{message: 'Unused injected value $q'}]
         },
         // service
         {
@@ -162,6 +185,9 @@ eslintTester.run('di-unused', rule, {
             errors: [{message: 'Unused injected value $q'}]
         }, {
             code: 'angular.module("").service("", fn); function fn($q) {}',
+            errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").service("", fn); ($q) => {}',
             errors: [{message: 'Unused injected value $q'}]
         },
         // config
@@ -177,6 +203,9 @@ eslintTester.run('di-unused', rule, {
         }, {
             code: 'angular.module("").config(fn); function fn($q) {}',
             errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").config(fn); ($q) => {}',
+            errors: [{message: 'Unused injected value $q'}]
         },
         // run
         {
@@ -191,6 +220,9 @@ eslintTester.run('di-unused', rule, {
         }, {
             code: 'angular.module("").run(fn); function fn($q) {}',
             errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").run(fn); ($q) => {}',
+            errors: [{message: 'Unused injected value $q'}]
         },
         // inject
         {
@@ -199,6 +231,9 @@ eslintTester.run('di-unused', rule, {
         }, {
             code: 'inject(["q", function($q) {}]);',
             errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'inject(["q", ($q) => {}]);',
+            errors: [{message: 'Unused injected value $q'}]
         },
         // provider $get
         {
@@ -206,6 +241,9 @@ eslintTester.run('di-unused', rule, {
             errors: [{message: 'Unused injected value $q'}]
         }, {
             code: 'angular.module("").provider("", function() {this.$get = ["q", function($q) {}];});',
+            errors: [{message: 'Unused injected value $q'}]
+        }, {
+            code: 'angular.module("").provider("", function() {this.$get = ["q", ($q) => {}];});',
             errors: [{message: 'Unused injected value $q'}]
         },
         // examples from issue #287
